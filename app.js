@@ -20,8 +20,12 @@ app.set("view engine", "ejs");
 
 //Routes
 app.use('/', require('./server/routes/index'));
+app.use('/', require('./server/routes/dashboard'));
 
 
+app.get('*', function(req, res){
+  res.status(404).render('404')
+})
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
