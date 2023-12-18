@@ -58,40 +58,47 @@ exports.dashboardViewNote = async (req, res) => {
   }
 };
 
-
 // PUT  --- Update specific notes
 
 exports.dashboardUpdateNote = async (req, res) => {
   try {
     await Note.findOneAndUpdate(
-      {_id: req.params.id },
-      { title: req.body.title, body: req.body.body}
-      ).where({ user: req.user.id });
-      res.redirect('/dashboard');
+      { _id: req.params.id },
+      { title: req.body.title, body: req.body.body }
+    ).where({ user: req.user.id });
+    res.redirect("/dashboard");
   } catch (error) {
     console.log(error);
   }
-}
-
+};
 
 // DELETE  ------ Delete specific notes
 
 exports.dashboardDeleteNote = async (req, res) => {
   try {
-    await Note.deleteOne({_id:req.params.id}).where({user: req.user.id});
-    res.redirect('/dashboard');
+    await Note.deleteOne({ _id: req.params.id }).where({ user: req.user.id });
+    res.redirect("/dashboard");
   } catch (error) {
     console.log(error);
   }
-}
-
+};
 
 // GET -------- Add Notes
 
-exports.dashboardAddNote = async(req, res) => {
-  res.render('dashboard/add', {
-    layout: '../views/layouts/dashboard'
+exports.dashboardAddNote = async (req, res) => {
+  res.render("dashboard/add", {
+    layout: "../views/layouts/dashboard",
   });
-}
+};
 
+//POST ----------- submit new note
 
+exports.dashboardAddNoteSubmit = async (req, res) => {
+  try {
+    req.body.user = req.user.id;
+    await Note.create(req.body);
+    res.redirect("/dashboard");
+  } catch (error) {
+    console.log(error);
+  }
+};
