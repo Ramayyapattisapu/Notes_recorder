@@ -42,12 +42,17 @@ router.get(
 
 //retrive user data
 router.get(
-  "/auth/google/callback",
+  "/google/callback",
   passport.authenticate("google", {
     failureRedirect: "/login-failure",
     successRedirect: "/dashboard",
   })
 );
+
+//route if something goes wrong
+router.get("/login-failure", (req, res) => {
+  res.send("Something went wrong...");
+});
 
 // Destroy user session
 router.get("/logout", (req, res) => {
@@ -61,10 +66,6 @@ router.get("/logout", (req, res) => {
   });
 });
 
-//route if something goes wrong
-router.get("/login-failure", (req, res) => {
-  res.send("Something went wrong...");
-});
 
 // persist user data after successful authentication
 
@@ -74,10 +75,13 @@ passport.serializeUser(function (user, done) {
 
 // retrive user data from session
 
-passport.deserializeUser(function (user, done) {
-  user.findById(id, function (err, user) {
-    done(err, user);
-  });
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
 });
 
 module.exports = router;
