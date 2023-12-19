@@ -48,7 +48,7 @@ exports.dashboardViewNote = async (req, res) => {
     .lean();
 
   if (note) {
-    res.render("dashboard/view-note", {
+    res.render("dashboard/view-notes", {
       noteID: req.params.id,
       note,
       layout: "../views/layouts/dashboard",
@@ -63,13 +63,12 @@ exports.dashboardViewNote = async (req, res) => {
 exports.dashboardUpdateNote = async (req, res) => {
   try {
     await Note.findOneAndUpdate(
-      { _id: req.params.id },
-      { title: req.body.title, body: req.body.body }
+       { _id: req.params.id },
+       { title: req.body.title, body: req.body.body, updatedAt: Date.now() }
     ).where({ user: req.user.id });
-    res.redirect("/dashboard");
-  } catch (error) {
+   } catch (error) {
     console.log(error);
-  }
+   }
 };
 
 // DELETE  ------ Delete specific notes
