@@ -49,7 +49,7 @@ exports.dashboardViewNote = async (req, res) => {
 
   if (note) {
     res.render("dashboard/view-note", {
-      noteId: req.params.id,
+      noteID: req.params.id,
       note,
       layout: "../views/layouts/dashboard",
     });
@@ -98,6 +98,42 @@ exports.dashboardAddNoteSubmit = async (req, res) => {
     req.body.user = req.user.id;
     await Note.create(req.body);
     res.redirect("/dashboard");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// GET  --------- Search notes
+
+exports.dashboardSearch = async (req, res) => {
+  try {
+    res.render("dashboard/search", {
+      searchResults: "",
+      layout: "../views/layouts/dashboard",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//  POST --------Search for notes
+
+exports.dashboardSearchSubmit = async (req, res) => {
+  try {
+    let searchTerm = req.body.searchTerm;
+    const searchNoSpecialChars = searchTerm.replace(/[^a-zA-z0-9 ]/g, "");
+
+    const searchResults = await Note.find({
+      $or: [
+        { title: { $regex: new RegExp(searchNoSpecialChars, "i") } },
+        { body: { $regex: new RegExp(searchNoSpecialChars, "i") } },
+      ],
+    }).where({ user: req.user.id });
+
+    res.render("dashboard/search", {
+      searchResults,
+      layout: "../views/layouts/dashboard",
+    });
   } catch (error) {
     console.log(error);
   }
